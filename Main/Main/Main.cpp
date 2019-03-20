@@ -10,30 +10,78 @@
 #include <iostream>
 #include <windows.h>
 #include <string>
+#include <time.h>
+#include <stdio.h>
 
 using namespace std;
 
-/*
- * 1. Blue         6. Yellow (Dark)        11. Bright Cyan
- * 2. Green        7. Default White        12. Bright Red
- * 3. Cyan         8. Grey                 13. Magenta
- * 4. Red          9. Bright Blue          14. Yellow
- * 5. Purple       10. Bright Green        15. Bright White
- * Numbers after '15' are background colours/
- */
+// Global variables.
+int														diskAmount;
+int														diskCounter;
+static const bool							hanoiStarted = false;
+
 void SetColor(int value) {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), value);
 }
 
+void delay(int numberOfSeconds) {
+// Converting time into milliseconds.
+	int milliSeconds = 100 * numberOfSeconds;
+	clock_t startTime = clock();
+
+	// Looping until required time is achieved.
+	while (clock() < startTime + milliSeconds);
+}
+
+void visualisationHanoi(int height) {
+	// Keeps track of the amounts of disks.
+	diskCounter = 0;
+	if (hanoiStarted) {
+		for (int i = 0; i < height; i++)
+		{
+			printf("     | 	    | 	   |		  \n");
+		}
+	}
+	else {
+			for (int i = 0; i < height; i++)
+			{
+				diskCounter++;
+				printf("     %d 	    | 	   |		  \n", diskCounter);
+			}
+	}
+	printf("-------------------------\n");
+}
+
+void TowerOfHanoi(int number, char source, char auxiliary, char destination) {
+
+	if (number == 1) {
+		printf("Move disk %d from %c to %c \n", number, source, destination);
+		delay(10);
+		visualisationHanoi(diskAmount);
+		return;
+	}
+
+	// Makes recursive call to move number - 1 disks to auxiliary pilar.
+	TowerOfHanoi(number - 1, source, destination, auxiliary);
+
+	// Move the numberth disk from "A" to "B"
+	printf("Move disk %d from %c to %c \n", number, source, destination);
+	delay(10);
+	visualisationHanoi(diskAmount);
+
+	// Move number - 1 disk from auxiliary pilar to destination pilar.
+	TowerOfHanoi(number - 1, auxiliary, source, destination);
+}
+
 int main()
 {
-	int                           diskAmount;
 	bool                          intro = false;
 	static const int							MIN_SIZE = 3;
 	static const int							MAX_SIZE = 7;
+	static const char							TOWER_NAMES[3] = { 'A', 'B', 'C'};
 	static const string           PROGRAM_INTRO = "Welcome to ";
 	static const string           PROGRAM_NAME = "Towers of Hanoi";
-	static const string           PROGRAM_OUTPUT = "\nPlease enter the amount of discs (3 - 7). \n";
+	static const string           PROGRAM_OUTPUT = "\nPlease enter the amount of disks in the stack (3 - 7). \n";
 	static const string						PROGRAM_ERROR = "\nInvalid number. Please pick number from 3 to 7. \n";
 
 		// Program shows error, so long there is no valid number (minSize-maxSize).
@@ -53,5 +101,10 @@ int main()
 				cout << PROGRAM_ERROR << endl;
 			}
 		} while (diskAmount < MIN_SIZE || diskAmount > MAX_SIZE);
+
+		// A, B, C -> A is source, B is auxiliary and C is destination.
+		TowerOfHanoi(diskAmount, TOWER_NAMES[0], TOWER_NAMES[1], TOWER_NAMES[2]);
+
+		return 0;
 }
 
