@@ -17,8 +17,8 @@ using namespace std;
 
 // Global variables.
 int														diskAmount;
-int														diskCounter;
-static const bool							hanoiStarted = false;
+bool													hanoiStarted = false;
+char													grid[3][7];
 
 void SetColor(int value) {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), value);
@@ -33,23 +33,16 @@ void delay(int numberOfSeconds) {
 	while (clock() < startTime + milliSeconds);
 }
 
-void visualisationHanoi(int height) {
-	// Keeps track of the amounts of disks.
-	diskCounter = 0;
-	if (hanoiStarted) {
-		for (int i = 0; i < height; i++)
+// char[][] or char**.
+void visualisationHanoi(int height, char grid[][7]) {
+	const int amountOfPoles = 3;
+	for (int x = 0; x < amountOfPoles; x++)
+	{
+		for (int y = 0; y < height; y++)
 		{
-			printf("     | 	    | 	   |		  \n");
+			grid[x][y] = '|';
 		}
 	}
-	else {
-			for (int i = 0; i < height; i++)
-			{
-				diskCounter++;
-				printf("     %d 	    | 	   |		  \n", diskCounter);
-			}
-	}
-	printf("-------------------------\n");
 }
 
 void TowerOfHanoi(int number, char source, char auxiliary, char destination) {
@@ -57,7 +50,8 @@ void TowerOfHanoi(int number, char source, char auxiliary, char destination) {
 	if (number == 1) {
 		printf("Move disk %d from %c to %c \n", number, source, destination);
 		delay(10);
-		visualisationHanoi(diskAmount);
+		visualisationHanoi(diskAmount, grid);
+		hanoiStarted = true;
 		return;
 	}
 
@@ -67,7 +61,7 @@ void TowerOfHanoi(int number, char source, char auxiliary, char destination) {
 	// Move the numberth disk from "A" to "B"
 	printf("Move disk %d from %c to %c \n", number, source, destination);
 	delay(10);
-	visualisationHanoi(diskAmount);
+	visualisationHanoi(diskAmount, grid);
 
 	// Move number - 1 disk from auxiliary pilar to destination pilar.
 	TowerOfHanoi(number - 1, auxiliary, source, destination);
@@ -82,7 +76,7 @@ int main()
 	static const string           PROGRAM_INTRO = "Welcome to ";
 	static const string           PROGRAM_NAME = "Towers of Hanoi";
 	static const string           PROGRAM_OUTPUT = "\nPlease enter the amount of disks in the stack (3 - 7). \n";
-	static const string						PROGRAM_ERROR = "\nInvalid number. Please pick number from 3 to 7. \n";
+	static const string						PROGRAM_ERROR = "\nPlease pick number from 3 to 7. \n";
 
 		// Program shows error, so long there is no valid number (minSize-maxSize).
 		do {
@@ -98,7 +92,10 @@ int main()
 			cin >> diskAmount;
 
 			if (diskAmount < MIN_SIZE || diskAmount > MAX_SIZE) {
-				cout << PROGRAM_ERROR << endl;
+				cerr << "\n**********************************" << endl
+					<< "      ERROR: Invalid Input!					 " << endl
+					<< "**********************************";
+				cerr << PROGRAM_ERROR << endl;
 			}
 		} while (diskAmount < MIN_SIZE || diskAmount > MAX_SIZE);
 
