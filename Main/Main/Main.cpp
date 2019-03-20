@@ -16,8 +16,10 @@
 using namespace std;
 
 // Global variables.
+int														diskCounter = -1;
+char													diskArray[] = { '1', '2', '3', '4', '5', '6', '7' };
 int														diskAmount;
-bool													hanoiStarted = false;
+const int											amountOfPoles = 3;
 char													grid[3][7];
 
 void SetColor(int value) {
@@ -33,38 +35,62 @@ void delay(int numberOfSeconds) {
 	while (clock() < startTime + milliSeconds);
 }
 
-// char[][] or char**.
-void visualisationHanoi(int height, char grid[][7]) {
-	const int amountOfPoles = 3;
-	for (int x = 0; x < amountOfPoles; x++)
+void visualisationHanoi(int height, char grid[][7], int destination, int diskNumber) {
+
+	// Fill the grid array.
+	for (int x = 0; x < height; x++)
 	{
-		for (int y = 0; y < height; y++)
+		for (int y = 0; y < amountOfPoles; y++)
 		{
 			grid[x][y] = '|';
 		}
 	}
+
+	// Insert disks.
+	for (int x = 0; x < height; x++)
+	{
+		diskCounter++;
+		for (int y = 0; y < amountOfPoles; y++)
+		{
+			grid[diskCounter][0] = diskArray[diskCounter];
+		}
+	}
+
+	// Reset counter.
+	diskCounter = -1; 
+
+	// Display the grid.
+	for (int x = 0; x < height; x++)
+	{
+		for (int y = 0; y < amountOfPoles; y++)
+		{
+			cout << "      " << grid[x][y];
+		}
+		cout << endl;
+	}
+
+	printf("---------------------------\n");
 }
 
-void TowerOfHanoi(int number, char source, char auxiliary, char destination) {
+void TowerOfHanoi(int number, int firstPillar, int midPillar, int lastPillar) {
 
 	if (number == 1) {
-		printf("Move disk %d from %c to %c \n", number, source, destination);
+		printf("Move disk %d from %d to %d \n", number, firstPillar, lastPillar);
 		delay(10);
-		visualisationHanoi(diskAmount, grid);
-		hanoiStarted = true;
+		visualisationHanoi(diskAmount, grid, lastPillar, number);
 		return;
 	}
 
 	// Makes recursive call to move number - 1 disks to auxiliary pilar.
-	TowerOfHanoi(number - 1, source, destination, auxiliary);
+	TowerOfHanoi(number - 1, firstPillar, lastPillar, midPillar);
 
 	// Move the numberth disk from "A" to "B"
-	printf("Move disk %d from %c to %c \n", number, source, destination);
+	printf("Move disk %d from %d to %d \n", number, firstPillar, lastPillar);
 	delay(10);
-	visualisationHanoi(diskAmount, grid);
+	visualisationHanoi(diskAmount, grid, lastPillar, number);
 
 	// Move number - 1 disk from auxiliary pilar to destination pilar.
-	TowerOfHanoi(number - 1, auxiliary, source, destination);
+	TowerOfHanoi(number - 1, midPillar, firstPillar, lastPillar);
 }
 
 int main()
@@ -72,7 +98,7 @@ int main()
 	bool                          intro = false;
 	static const int							MIN_SIZE = 3;
 	static const int							MAX_SIZE = 7;
-	static const char							TOWER_NAMES[3] = { 'A', 'B', 'C'};
+	static const int							TOWER_NAMES[3] = { 0, 1, 2 };
 	static const string           PROGRAM_INTRO = "Welcome to ";
 	static const string           PROGRAM_NAME = "Towers of Hanoi";
 	static const string           PROGRAM_OUTPUT = "\nPlease enter the amount of disks in the stack (3 - 7). \n";
