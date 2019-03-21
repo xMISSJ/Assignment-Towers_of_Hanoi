@@ -26,8 +26,8 @@ static const string						PROGRAM_ERROR = "\nPlease pick number from 3 to 7. \n";
 
 int														diskCounter = -1;
 char													diskArray[] = { '1', '2', '3', '4', '5', '6', '7' };
-int														diskAmount;
-char													grid[MIN_SIZE][MAX_SIZE];
+int														poleHeight;
+char													grid[MAX_SIZE][MAX_SIZE];
 bool                          intro = false;
 int														moves = 0;
 
@@ -44,12 +44,14 @@ void delay(int numberOfSeconds) {
 	while (clock() < startTime + milliSeconds);
 }
 
-void visualisationHanoi(int height, int disk, int currentPosition, int nextPosition) {
+void visualisationHanoi(int poleHeight, int disk, int currentPosition, int nextPosition, bool show = false) {
 	SetColor(12);
-	for (int x = 0; x < AMOUNT_OF_POLES; x++)
+
+	for (int y = 0; y < poleHeight; y++)
 	{
-		for (int y = 0; y < height; y++)
+		for (int x = 0; x < AMOUNT_OF_POLES; x++)
 		{
+			// Find the disk that is going to move
 			if ((int)grid[x][y] - 48 == disk) {
 
 				// Save the disk
@@ -59,31 +61,33 @@ void visualisationHanoi(int height, int disk, int currentPosition, int nextPosit
 				grid[x][y] = '|';
 
 				// Move the disk to the next position
-				for (int nextPole = height; nextPole --> 0;)
+				for (int nextPole = poleHeight; nextPole --> 0;)
 				{
-					if (grid[nextPole][nextPosition] == '|') {
-						grid[nextPole][nextPosition] = disk + '0';
+					// If the disk finds an available spot, it will insert it
+					if (grid[nextPosition][nextPole] == '|') {
+						grid[nextPosition][nextPole] = disk + '0';
 						break;
 					}
 				}
-
 			}
-			cout << "     " << grid[x][y] << "  ";
+			if (show)
+				cout << "     " << grid[x][y] << "  ";
 		}
-		cout << endl;
+		if (show)
+			cout << endl;
 	}
-
-	printf("---------------------------\n");
+	if (show)
+		printf("---------------------------\n");
 	SetColor(7);
 }
 
 void TowerOfHanoi(int disk, int currentPosition, int midPillar, int nextPosition) {
 
-	if (disk == 1) {
-		moves++;
-		printf("Move disk %d from %d to %d \n", disk, currentPosition, nextPosition);
+	moves++;
+
+	if (disk == 0) {
 		delay(10);
-		visualisationHanoi(diskAmount, disk, currentPosition, nextPosition);
+		visualisationHanoi(poleHeight, disk, currentPosition, nextPosition, true);
 		return;
 	}
 
@@ -92,8 +96,7 @@ void TowerOfHanoi(int disk, int currentPosition, int midPillar, int nextPosition
 
 	// Move the numberth disk from "A" to "B"
 	printf("Move disk %d from %d to %d \n", disk, currentPosition, nextPosition);
-	delay(10);
-	visualisationHanoi(diskAmount, disk, currentPosition, nextPosition);
+	visualisationHanoi(poleHeight, disk, currentPosition, nextPosition);
 
 	// Move number - 1 disk from auxiliary pilar to destination pilar.
 	TowerOfHanoi(disk - 1, midPillar, currentPosition, nextPosition);
@@ -112,28 +115,33 @@ int main()
 				cout << "!" << PROGRAM_OUTPUT;
 				intro = true;
 			}
-			cin >> diskAmount;
+			cin >> poleHeight;
 
-			if (diskAmount < MIN_SIZE || diskAmount > MAX_SIZE) {
+			if (poleHeight < MIN_SIZE || poleHeight > MAX_SIZE) {
 				cerr << "\n**********************************" << endl
 					<< "      ERROR: Invalid Input!					 " << endl
 					<< "**********************************";
 				cerr << PROGRAM_ERROR << endl;
 			}
-		} while (diskAmount < MIN_SIZE || diskAmount > MAX_SIZE);
+		} while (poleHeight < MIN_SIZE || poleHeight > MAX_SIZE);
 
 
-		for (int x = 0; x < diskAmount; x++)
+		cout << "Height: " << poleHeight << endl;
+
+		// Create poles
+		for (int y = 0; y < poleHeight; y++)
 		{
-			for (int y = 0; y < 3; y++)
+			for (int x = 0; x < AMOUNT_OF_POLES; x++)
 			{
 				grid[x][y] = '|';
 			}
-			grid[x][0] = x + 1 + '0';
+			// Insert disks
+			grid[0][y] = y + 1 + '0';
 		}
 
+		cout << endl;
 		// A, B, C -> A is source, B is auxiliary and C is destination.
-		TowerOfHanoi(diskAmount, TOWER_NAMES[0], TOWER_NAMES[1], TOWER_NAMES[2]);
+		TowerOfHanoi(poleHeight, TOWER_NAMES[0], TOWER_NAMES[1], TOWER_NAMES[2]);
 
 		return 0;
 }
