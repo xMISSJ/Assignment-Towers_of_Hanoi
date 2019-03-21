@@ -1,9 +1,8 @@
-// Main.cpp : This file contains the 'main' function. Program execution begins and ends there.
-
 /*
  *	This is the main.cpp file for the Towers of Hanoi.
  *	Developed for the Towers of Hanoi school assignment.
- *	This .cpp file fetches and stores user input data. It also prints text for the user in the console.
+ *  This main.cpp solves the Towers of Hanoi puzzle with a recursive method (bruteforce). 
+ *  The output is shown in the form of ASCII art.
  */
 
 #include "pch.h"
@@ -18,6 +17,7 @@ using namespace std;
 // Global variables.
 static const int							MIN_SIZE = 3;
 static const int							MAX_SIZE = 7;
+static const int							AMOUNT_OF_POLES = 3;
 static const int							TOWER_NAMES[3] = { 0, 1, 2 };
 static const string           PROGRAM_INTRO = "Welcome to ";
 static const string           PROGRAM_NAME = "Towers of Hanoi";
@@ -27,7 +27,6 @@ static const string						PROGRAM_ERROR = "\nPlease pick number from 3 to 7. \n";
 int														diskCounter = -1;
 char													diskArray[] = { '1', '2', '3', '4', '5', '6', '7' };
 int														diskAmount;
-const int											amountOfPoles = 3;
 char													grid[MIN_SIZE][MAX_SIZE];
 bool                          intro = false;
 int														moves = 0;
@@ -46,8 +45,8 @@ void delay(int numberOfSeconds) {
 }
 
 void visualisationHanoi(int height, int disk, int currentPosition, int nextPosition) {
-
-	for (int x = 0; x < amountOfPoles; x++)
+	SetColor(12);
+	for (int x = 0; x < AMOUNT_OF_POLES; x++)
 	{
 		for (int y = 0; y < height; y++)
 		{
@@ -69,12 +68,13 @@ void visualisationHanoi(int height, int disk, int currentPosition, int nextPosit
 				}
 
 			}
-			cout << "   " << grid[x][y] << "   ";
+			cout << "     " << grid[x][y] << "  ";
 		}
 		cout << endl;
 	}
 
 	printf("---------------------------\n");
+	SetColor(7);
 }
 
 void TowerOfHanoi(int disk, int currentPosition, int midPillar, int nextPosition) {
@@ -101,7 +101,6 @@ void TowerOfHanoi(int disk, int currentPosition, int midPillar, int nextPosition
 
 int main()
 {
-
 		// Program shows error, so long there is no valid number (minSize-maxSize).
 		do {
 			// codes;
@@ -126,7 +125,7 @@ int main()
 
 		for (int x = 0; x < diskAmount; x++)
 		{
-			for (int y = 0; y < amountOfPoles; y++)
+			for (int y = 0; y < 3; y++)
 			{
 				grid[x][y] = '|';
 			}
